@@ -1,0 +1,7 @@
+{"type":"mode","mode":"normal","sessionId":"sess-basic"}
+{"type":"ai-title","aiTitle":"Arreglar heatmap","sessionId":"sess-basic"}
+{"type":"user","sessionId":"sess-basic","cwd":"/Users/x/proj","gitBranch":"main","timestamp":"2026-06-24T10:00:00Z","message":{"role":"user","content":"arregla el tracking de visitas"}}
+{"type":"assistant","sessionId":"sess-basic","cwd":"/Users/x/proj","timestamp":"2026-06-24T10:01:00Z","message":{"role":"assistant","content":[{"type":"thinking","text":"pienso en la causa"},{"type":"tool_use","name":"Edit"},{"type":"text","text":"Listo, lo arreglé.\nrecap: arreglé el tracking de visitas y quedó desplegado"}]}}
+{"type":"user","sessionId":"sess-basic","timestamp":"2026-06-24T10:01:05Z","toolUseResult":"ok","message":{"role":"user","content":[{"type":"tool_result","content":"done"}]}}
+{"type":"assistant","sessionId":"sess-basic","isSidechain":true,"timestamp":"2026-06-24T10:02:00Z","message":{"role":"assistant","content":[{"type":"text","text":"soy un subagente"}]}}
+{"type":"user","sessionId":"sess-basic","timestamp":"2026-06-24T10:03:00Z","message":{"role":"user","content":[{"type":"text","text":"gracias"}]}}

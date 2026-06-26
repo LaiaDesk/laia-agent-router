@@ -1,0 +1,23 @@
+{
+  "extension.description": "Router de atención en vivo para quienes manejan muchas sesiones de Claude Code en varios proyectos: mira cuál te necesita ahora (trabajando / te toca / bloqueado / inactivo), navega el historial, reanuda y crea proyectos nuevos. Solo lectura sobre los transcripts de Claude Code.",
+  "view.sessions.name": "Sesiones",
+  "command.addProject.title": "Agregar proyecto",
+  "command.open.title": "Abrir tema",
+  "command.refresh.title": "Refrescar",
+  "command.resume.title": "Reanudar en terminal",
+  "command.resumeFull.title": "Reanudar con permisos totales",
+  "command.archive.title": "Archivar (cerrar tema)",
+  "command.unarchive.title": "Desarchivar",
+  "command.hide.title": "Quitar del panel",
+  "command.deleteForever.title": "Eliminar definitivamente…",
+  "command.rename.title": "Renombrar etiqueta",
+  "command.toggleArchived.title": "Mostrar/ocultar archivados",
+  "command.recapTimeline.title": "Resumen de recaps",
+  "command.search.title": "Buscar en chats",
+  "config.projectsRoot.description": "Ruta a las carpetas de proyectos de Claude Code. Vacío = ~/.claude/projects.",
+  "config.newProjectRoot.description": "Carpeta base que pre-rellena 'Agregar proyecto'. Vacío = tu carpeta personal (~).",
+  "config.includeTempProjects.description": "Incluir proyectos temporales/scratch (/tmp, var-folders…).",
+  "config.resumeSkipPermissions.description": "Reanudar con permisos totales por defecto (claude --resume --dangerously-skip-permissions). El botón ⚡ del visor siempre lo aplica, independientemente de este ajuste.",
+  "config.blockedAfterSeconds.description": "Segundos que una herramienta puede estar pendiente antes de marcar el tema como 🔴 bloqueado (posible permiso o cuelgue).",
+  "config.idleAfterMinutes.description": "Minutos sin actividad tras los que un tema pasa a ⚪ inactivo (sale del radar: no titila ni cuenta en el badge)."
+}

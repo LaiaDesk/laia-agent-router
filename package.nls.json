@@ -1,0 +1,23 @@
+{
+  "extension.description": "Live attention router for developers juggling many Claude Code sessions across projects: see which one needs you now (working / your turn / blocked / idle), browse history, resume, and scaffold new projects. Read-only over Claude Code transcripts.",
+  "view.sessions.name": "Sessions",
+  "command.addProject.title": "Add project",
+  "command.open.title": "Open topic",
+  "command.refresh.title": "Refresh",
+  "command.resume.title": "Resume in terminal",
+  "command.resumeFull.title": "Resume with full permissions",
+  "command.archive.title": "Archive (close topic)",
+  "command.unarchive.title": "Unarchive",
+  "command.hide.title": "Remove from panel",
+  "command.deleteForever.title": "Delete permanently…",
+  "command.rename.title": "Rename label",
+  "command.toggleArchived.title": "Show/hide archived",
+  "command.recapTimeline.title": "Recap summary",
+  "command.search.title": "Search in chats",
+  "config.projectsRoot.description": "Path to Claude Code project folders. Empty = ~/.claude/projects.",
+  "config.newProjectRoot.description": "Base folder that pre-fills 'Add project'. Empty = your home folder (~).",
+  "config.includeTempProjects.description": "Include temporary/scratch projects (/tmp, var-folders…).",
+  "config.resumeSkipPermissions.description": "Resume with full permissions by default (claude --resume --dangerously-skip-permissions). The viewer's ⚡ button always applies it, regardless of this setting.",
+  "config.blockedAfterSeconds.description": "Seconds a tool may stay pending before marking the topic as 🔴 blocked (possible permission prompt or hang).",
+  "config.idleAfterMinutes.description": "Minutes of inactivity after which a topic becomes ⚪ idle (off the radar: no blinking, not counted in the badge)."
+}

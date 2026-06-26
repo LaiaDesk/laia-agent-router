@@ -1,0 +1,4 @@
+{"type":"ai-title","aiTitle":"Meeting-IA reliability","sessionId":"sess-real"}
+{"type":"user","sessionId":"sess-real","cwd":"/Users/x/proj","timestamp":"2026-06-24T11:00:00Z","message":{"role":"user","content":"hazlo robusto"}}
+{"type":"user","sessionId":"sess-real","cwd":"/Users/x/proj","timestamp":"2026-06-24T11:05:00Z","message":{"role":"user","content":"✳ Cooked for 2m 17s\n\n※ recap: Goal: make Meeting-IA join reliably"}}
+{"type":"assistant","sessionId":"sess-real","timestamp":"2026-06-24T11:06:00Z","message":{"role":"assistant","content":[{"type":"text","text":"Hecho.\n\n**Recap:**\n\n- desplegado y verificado"}]}}

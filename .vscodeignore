@@ -1,0 +1,14 @@
+# Sources & dev-only files — the packaged extension only needs dist/ + manifest + assets.
+src/**
+test/**
+scripts/**
+.github/**
+node_modules/**
+*.ts
+tsconfig.json
+.gitignore
+.vscodeignore
+package-lock.json
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+**/*.map

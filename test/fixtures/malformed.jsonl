@@ -1,0 +1,5 @@
+{"type":"ai-title","aiTitle":"Robustez","sessionId":"sess-bad"}
+
+this is not valid json {oops
+{"type":"user","sessionId":"sess-bad","timestamp":"2026-06-24T08:00:00Z","message":{"role":"user","content":"hola"}}
+{"type":"assistant","sessionId":"sess-bad","message":{"role":"assistant","content":[]}}

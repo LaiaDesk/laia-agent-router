@@ -1,0 +1,3 @@
+{"type":"ai-title","aiTitle":"Sesion con recap meta","sessionId":"sess-meta"}
+{"type":"user","sessionId":"sess-meta","cwd":"/tmp/p","timestamp":"2026-06-24T09:00:00Z","isMeta":true,"message":{"role":"user","content":"recap: Goal: turn the agent-creation assistant into a full assistant"}}
+{"type":"assistant","sessionId":"sess-meta","timestamp":"2026-06-24T09:01:00Z","message":{"role":"assistant","content":[{"type":"text","text":"ok"}]}}

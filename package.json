@@ -1,0 +1,245 @@
+{
+  "name": "laia-agent-router",
+  "displayName": "Laia Agent Router",
+  "version": "0.1.0",
+  "private": true,
+  "publisher": "laiadesk",
+  "description": "%extension.description%",
+  "engines": {
+    "vscode": "^1.85.0",
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LaiaDesk/laia-agent-router.git"
+  },
+  "type": "module",
+  "main": "./dist/extension.cjs",
+  "l10n": "./l10n",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "scripts": {
+    "build": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node18 --external:vscode --outfile=dist/extension.cjs",
+    "vscode:prepublish": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "laiaChats",
+          "title": "Laia Agent Router",
+          "icon": "media/laia.svg"
+        }
+      ]
+    },
+    "views": {
+      "laiaChats": [
+        {
+          "id": "laiaChats.sessions",
+          "name": "%view.sessions.name%"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "laiaChats.addProject",
+        "title": "%command.addProject.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(add)"
+      },
+      {
+        "command": "laiaChats.open",
+        "title": "%command.open.title%",
+        "category": "Laia Agent Router"
+      },
+      {
+        "command": "laiaChats.refresh",
+        "title": "%command.refresh.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "laiaChats.resume",
+        "title": "%command.resume.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(debug-continue)"
+      },
+      {
+        "command": "laiaChats.resumeFull",
+        "title": "%command.resumeFull.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "laiaChats.archive",
+        "title": "%command.archive.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(archive)"
+      },
+      {
+        "command": "laiaChats.unarchive",
+        "title": "%command.unarchive.title%",
+        "category": "Laia Agent Router"
+      },
+      {
+        "command": "laiaChats.hide",
+        "title": "%command.hide.title%",
+        "category": "Laia Agent Router"
+      },
+      {
+        "command": "laiaChats.deleteForever",
+        "title": "%command.deleteForever.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "laiaChats.rename",
+        "title": "%command.rename.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "laiaChats.toggleArchived",
+        "title": "%command.toggleArchived.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(archive)"
+      },
+      {
+        "command": "laiaChats.recapTimeline",
+        "title": "%command.recapTimeline.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(list-flat)"
+      },
+      {
+        "command": "laiaChats.search",
+        "title": "%command.search.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(search)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "laiaChats.open",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "laiaChats.addProject",
+          "when": "view == laiaChats.sessions",
+          "group": "navigation@0"
+        },
+        {
+          "command": "laiaChats.search",
+          "when": "view == laiaChats.sessions",
+          "group": "navigation@1"
+        },
+        {
+          "command": "laiaChats.recapTimeline",
+          "when": "view == laiaChats.sessions",
+          "group": "navigation@2"
+        },
+        {
+          "command": "laiaChats.toggleArchived",
+          "when": "view == laiaChats.sessions",
+          "group": "navigation@3"
+        },
+        {
+          "command": "laiaChats.refresh",
+          "when": "view == laiaChats.sessions",
+          "group": "navigation@4"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "laiaChats.resume",
+          "when": "view == laiaChats.sessions && viewItem =~ /session/",
+          "group": "inline@1"
+        },
+        {
+          "command": "laiaChats.resumeFull",
+          "when": "view == laiaChats.sessions && viewItem =~ /session/",
+          "group": "1_edit@0"
+        },
+        {
+          "command": "laiaChats.rename",
+          "when": "view == laiaChats.sessions && viewItem =~ /session/",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "laiaChats.archive",
+          "when": "view == laiaChats.sessions && viewItem == session",
+          "group": "1_edit@2"
+        },
+        {
+          "command": "laiaChats.unarchive",
+          "when": "view == laiaChats.sessions && viewItem == session-archived",
+          "group": "1_edit@2"
+        },
+        {
+          "command": "laiaChats.hide",
+          "when": "view == laiaChats.sessions && viewItem =~ /session/",
+          "group": "2_danger@1"
+        },
+        {
+          "command": "laiaChats.deleteForever",
+          "when": "view == laiaChats.sessions && viewItem =~ /session/",
+          "group": "2_danger@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Laia Agent Router",
+      "properties": {
+        "laiaChats.projectsRoot": {
+          "type": "string",
+          "default": "",
+          "description": "%config.projectsRoot.description%"
+        },
+        "laiaChats.newProjectRoot": {
+          "type": "string",
+          "default": "",
+          "description": "%config.newProjectRoot.description%"
+        },
+        "laiaChats.includeTempProjects": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.includeTempProjects.description%"
+        },
+        "laiaChats.resumeSkipPermissions": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.resumeSkipPermissions.description%"
+        },
+        "laiaChats.blockedAfterSeconds": {
+          "type": "number",
+          "default": 60,
+          "description": "%config.blockedAfterSeconds.description%"
+        },
+        "laiaChats.idleAfterMinutes": {
+          "type": "number",
+          "default": 15,
+          "description": "%config.idleAfterMinutes.description%"
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.24.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

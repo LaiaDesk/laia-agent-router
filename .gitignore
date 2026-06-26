@@ -1,0 +1,20 @@
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Índice derivado (reconstruible desde los .jsonl)
+*.db
+*.db-journal
+.laia-chats/
+
+# NUNCA commitear transcripts reales (pueden contener secretos del usuario).
+# Las pruebas usan fixtures sintéticos en test/fixtures/.
+.smoke-real/
+**/real-transcripts/
+*.jsonl
+!test/fixtures/*.jsonl
+
+.DS_Store
+
+# Artefactos de empaquetado VS Code
+*.vsix
