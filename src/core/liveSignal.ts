@@ -23,6 +23,36 @@ export interface HookSignal {
 }
 
 /**
+ * Map a Claude Code hook event to a signal kind, or null if the event carries no useful state.
+ * `notificationType` is only set for the `Notification` event (e.g. 'permission_prompt',
+ * 'idle_prompt', 'auth_success', 'elicitation_dialog'). Kept in sync with the hook helper script.
+ */
+export function signalKindForEvent(event: string, notificationType?: string | null): SignalKind | null {
+  switch (event) {
+    case 'UserPromptSubmit':
+    case 'PreToolUse':
+    case 'PostToolUse':
+      return 'working';
+    case 'Stop':
+      return 'awaiting';
+    case 'SessionEnd':
+      return 'session-end';
+    case 'Notification':
+      switch (notificationType) {
+        case 'idle_prompt':
+          return 'awaiting';
+        case 'permission_prompt':
+        case 'elicitation_dialog':
+          return 'blocked'; // Claude needs your approval/input to continue
+        default:
+          return null; // auth_success, elicitation_complete, unknown… not attention
+      }
+    default:
+      return null;
+  }
+}
+
+/**
  * Resolve the live state of a session. If a hook signal is fresh (within `freshnessMs`), it wins;
  * otherwise we defer to `fallback` (the transcript-inferred state from computeState).
  * A fresh `session-end` means the session closed → idle.

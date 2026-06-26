@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveState, type HookSignal } from '../src/core/liveSignal';
+import { resolveState, signalKindForEvent, type HookSignal } from '../src/core/liveSignal';
 
 const now = 1_000_000;
 const fresh = (extra: Partial<HookSignal> = {}): HookSignal => ({ kind: 'working', ts: now - 1000, ...extra });
@@ -35,5 +35,38 @@ describe('resolveState', () => {
     const sig: HookSignal = { kind: 'working', ts: now - 5000 };
     expect(resolveState(sig, 'idle', now, 2000)).toBe('idle'); // 5s old, window 2s -> stale -> fallback
     expect(resolveState(sig, 'idle', now, 10_000)).toBe('working'); // within 10s window
+  });
+});
+
+describe('signalKindForEvent', () => {
+  it('maps activity events to working', () => {
+    expect(signalKindForEvent('UserPromptSubmit')).toBe('working');
+    expect(signalKindForEvent('PreToolUse')).toBe('working');
+    expect(signalKindForEvent('PostToolUse')).toBe('working');
+  });
+
+  it('maps Stop to awaiting (your turn)', () => {
+    expect(signalKindForEvent('Stop')).toBe('awaiting');
+  });
+
+  it('maps Notification by notification_type', () => {
+    expect(signalKindForEvent('Notification', 'idle_prompt')).toBe('awaiting');
+    expect(signalKindForEvent('Notification', 'permission_prompt')).toBe('blocked');
+    expect(signalKindForEvent('Notification', 'elicitation_dialog')).toBe('blocked');
+  });
+
+  it('ignores notifications that are not attention (returns null)', () => {
+    expect(signalKindForEvent('Notification', 'auth_success')).toBeNull();
+    expect(signalKindForEvent('Notification')).toBeNull(); // unknown/missing type
+  });
+
+  it('maps SessionEnd to session-end', () => {
+    expect(signalKindForEvent('SessionEnd')).toBe('session-end');
+  });
+
+  it('returns null for events we do not track', () => {
+    expect(signalKindForEvent('SessionStart')).toBeNull();
+    expect(signalKindForEvent('PreCompact')).toBeNull();
+    expect(signalKindForEvent('whatever')).toBeNull();
   });
 });
