@@ -22,5 +22,6 @@
   "config.idleAfterMinutes.description": "Minutes of inactivity after which a topic becomes ⚪ idle (off the radar: no blinking, not counted in the badge).",
   "command.enableLiveSignal.title": "Enable live status",
   "command.snooze.title": "Snooze…",
-  "command.unsnooze.title": "Unsnooze"
+  "command.unsnooze.title": "Unsnooze",
+  "command.newSession.title": "New session"
 }

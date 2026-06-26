@@ -82,6 +82,12 @@
         "icon": "$(broadcast)"
       },
       {
+        "command": "laiaChats.newSession",
+        "title": "%command.newSession.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(add)"
+      },
+      {
         "command": "laiaChats.open",
         "title": "%command.open.title%",
         "category": "Laia Agent Router"
@@ -203,6 +209,11 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "laiaChats.newSession",
+          "when": "view == laiaChats.sessions && viewItem == project",
+          "group": "inline@1"
+        },
         {
           "command": "laiaChats.resume",
           "when": "view == laiaChats.sessions && viewItem =~ /session/",

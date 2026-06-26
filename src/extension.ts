@@ -387,6 +387,18 @@ export function activate(context: vscode.ExtensionContext): void {
 
   cmd('laiaChats.addProject', () => void addProject());
   cmd('laiaChats.enableLiveSignal', () => void enableLiveSignal());
+
+  // New chat session in an existing project: open a terminal in its cwd and launch `claude`.
+  cmd('laiaChats.newSession', (node: TreeNode) => {
+    if (node?.kind !== 'project') return;
+    const newest = node.project.sessions[0];
+    const cwd = newest ? safeCwd(newest.path) : null;
+    const label = cwd ? basename(cwd) : node.project.displayName;
+    const terminal = vscode.window.createTerminal({ name: `Laia · ${label} (new)`, cwd: cwd ?? undefined });
+    terminal.show();
+    terminal.sendText('claude');
+  });
+
   cmd('laiaChats.open', openSession);
   cmd('laiaChats.refresh', () => tree.reload());
 
