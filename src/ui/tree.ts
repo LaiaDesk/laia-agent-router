@@ -300,15 +300,18 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
     const lastMs = Number.isNaN(parsed) ? s.mtimeMs : parsed;
 
     const state = meta.archived ? 'idle' : this.stateOf(s);
-    const frozen = s.id === this.openSessionId; // focus rule: the open one does not animate
+    const snoozed = !meta.archived && !!meta.snoozedUntil && Date.now() < meta.snoozedUntil;
+    const frozen = s.id === this.openSessionId || snoozed; // focus rule + snoozed: do not animate
     const item = new vscode.TreeItem(label, vscode.TreeItemCollapsibleState.None);
     item.id = s.id; // stable id: lets VS Code refresh this node in a targeted way
-    item.description = `${recaps ? `★${recaps} ` : ''}${relTime(lastMs)}`;
+    item.description = `${snoozed ? '💤 ' : ''}${recaps ? `★${recaps} ` : ''}${relTime(lastMs)}`;
     item.iconPath = iconFor(state, this.blinkOn, frozen, !!meta.archived);
-    item.contextValue = meta.archived ? 'session-archived' : 'session';
+    item.contextValue = meta.archived ? 'session-archived' : snoozed ? 'session-snoozed' : 'session';
 
     const tip = new vscode.MarkdownString();
+    tip.supportThemeIcons = true;
     if (!meta.archived) tip.appendMarkdown(`**${vscode.l10n.t('Status:')}** ${stateLabel(state)}\n\n`);
+    if (snoozed) tip.appendMarkdown(`$(bell-slash) ${vscode.l10n.t('Snoozed until {0}', fmtDateTime(meta.snoozedUntil!))}\n\n`);
     tip.appendMarkdown(`**${vscode.l10n.t('Last interaction:')}** ${fmtDateTime(lastMs)}\n\n`);
     tip.appendMarkdown(`${vscode.l10n.t('{0} messages · {1} recaps', messages || '?', recaps)}\n\n`);
     tip.appendMarkdown(`\`${s.path}\``);

@@ -14,6 +14,8 @@ export interface SessionMeta {
   archived?: boolean;
   /** Hidden from the panel (soft delete); the `.jsonl` remains intact. */
   hidden?: boolean;
+  /** Muted until this epoch-ms: not counted in the badge nor blinking while snoozed. */
+  snoozedUntil?: number;
 }
 
 interface StoreData {
@@ -54,6 +56,7 @@ export class MetaStore {
     if (!next.label) delete next.label;
     if (!next.archived) delete next.archived;
     if (!next.hidden) delete next.hidden;
+    if (!next.snoozedUntil) delete next.snoozedUntil;
     if (Object.keys(next).length === 0) delete this.data.sessions[id];
     else this.data.sessions[id] = next;
     this.persist();
@@ -73,6 +76,11 @@ export class MetaStore {
 
   setHidden(id: string, hidden: boolean): void {
     this.mutate(id, { hidden });
+  }
+
+  /** Mute a session until `until` (epoch ms), or clear the snooze with `undefined`. */
+  setSnoozedUntil(id: string, until: number | undefined): void {
+    this.mutate(id, { snoozedUntil: until });
   }
 
   get showArchived(): boolean {

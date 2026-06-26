@@ -68,5 +68,11 @@
   "Enable": "Activar",
   "Enable live status? This installs a small helper and adds Laia hooks to your Claude Code settings ({0}). Your existing settings are preserved.": "¿Activar el estado en vivo? Instala un pequeño ayudante y añade los hooks de Laia a tus ajustes de Claude Code ({0}). Tus ajustes existentes se conservan.",
   "Live status enabled. Claude Code applies the hooks automatically.": "Estado en vivo activado. Claude Code aplica los hooks automáticamente.",
-  "Could not enable live status: {0}": "No se pudo activar el estado en vivo: {0}"
+  "Could not enable live status: {0}": "No se pudo activar el estado en vivo: {0}",
+  "Snooze this topic for…": "Posponer este tema durante…",
+  "30 minutes": "30 minutos",
+  "1 hour": "1 hora",
+  "4 hours": "4 horas",
+  "1 day": "1 día",
+  "Snoozed until {0}": "Pospuesto hasta {0}"
 }

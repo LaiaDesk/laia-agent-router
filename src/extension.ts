@@ -417,6 +417,25 @@ export function activate(context: vscode.ExtensionContext): void {
     tree.reload();
   });
 
+  cmd('laiaChats.snooze', async (node: TreeNode) => {
+    if (node?.kind !== 'session') return;
+    const options = [
+      { label: vscode.l10n.t('30 minutes'), ms: 30 * 60_000 },
+      { label: vscode.l10n.t('1 hour'), ms: 60 * 60_000 },
+      { label: vscode.l10n.t('4 hours'), ms: 4 * 60 * 60_000 },
+      { label: vscode.l10n.t('1 day'), ms: 24 * 60 * 60_000 },
+    ];
+    const pick = await vscode.window.showQuickPick(options, { title: vscode.l10n.t('Snooze this topic for…') });
+    if (!pick) return;
+    store.setSnoozedUntil(node.session.id, Date.now() + pick.ms);
+    tree.reload();
+  });
+  cmd('laiaChats.unsnooze', (node: TreeNode) => {
+    if (node?.kind !== 'session') return;
+    store.setSnoozedUntil(node.session.id, undefined);
+    tree.reload();
+  });
+
   cmd('laiaChats.deleteForever', async (node: TreeNode) => {
     if (node?.kind !== 'session') return;
     const del = vscode.l10n.t('Delete permanently');

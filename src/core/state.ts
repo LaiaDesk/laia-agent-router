@@ -154,6 +154,7 @@ export function liveScan(
       if (s.id === opts.excludeId) continue;
       const meta = store.get(s.id);
       if (meta.hidden || meta.archived) continue;
+      if (meta.snoozedUntil && now < meta.snoozedUntil) continue; // snoozed: muted from the badge
       if (state === 'awaiting') awaiting++;
       else if (state === 'blocked') blocked++;
     }
