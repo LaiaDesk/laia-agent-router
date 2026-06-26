@@ -2,9 +2,13 @@
   "name": "laia-agent-router",
   "displayName": "Laia Agent Router",
   "version": "0.1.0",
-  "private": true,
   "publisher": "laiadesk",
   "description": "%extension.description%",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.85.0",
     "node": ">=18"
@@ -14,13 +18,28 @@
     "type": "git",
     "url": "https://github.com/LaiaDesk/laia-agent-router.git"
   },
+  "bugs": {
+    "url": "https://github.com/LaiaDesk/laia-agent-router/issues"
+  },
+  "homepage": "https://github.com/LaiaDesk/laia-agent-router#readme",
   "type": "module",
   "main": "./dist/extension.cjs",
   "l10n": "./l10n",
   "activationEvents": [
     "onStartupFinished"
   ],
+  "keywords": [
+    "claude",
+    "claude code",
+    "anthropic",
+    "ai agents",
+    "sessions",
+    "history",
+    "productivity"
+  ],
   "categories": [
+    "AI",
+    "Visualization",
     "Other"
   ],
   "scripts": {

@@ -1,5 +1,11 @@
 # Laia Agent Router
 
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/laiadesk.laia-agent-router?label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=laiadesk.laia-agent-router)
+[![Open VSX](https://img.shields.io/open-vsx/v/laiadesk/laia-agent-router?label=Open%20VSX)](https://open-vsx.org/extension/laiadesk/laia-agent-router)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/laiadesk.laia-agent-router?label=installs)](https://marketplace.visualstudio.com/items?itemName=laiadesk.laia-agent-router)
+[![CI](https://github.com/LaiaDesk/laia-agent-router/actions/workflows/ci.yml/badge.svg)](https://github.com/LaiaDesk/laia-agent-router/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/LaiaDesk/laia-agent-router)](LICENSE)
+
 **A live attention router for developers who run many Claude Code sessions at once.**
 
 When you drive several [Claude Code](https://claude.com/claude-code) agents across multiple
@@ -46,7 +52,18 @@ Router is for that workflow — the "router of attention" for people juggling ma
 - VS Code `^1.85.0`
 - [Claude Code](https://claude.com/claude-code) installed, with sessions under `~/.claude/projects/`.
 
-## Install (from source)
+## Install
+
+**From the VS Code Marketplace** — search for **"Laia Agent Router"** in the Extensions view, or:
+
+```bash
+code --install-extension laiadesk.laia-agent-router
+```
+
+**From Open VSX** (Cursor, Windsurf, VSCodium, Gitpod, …) — search for **"Laia Agent Router"**, or
+install the `.vsix` from the [latest release](https://github.com/LaiaDesk/laia-agent-router/releases).
+
+**From source:**
 
 ```bash
 npm install
@@ -55,7 +72,7 @@ npx @vscode/vsce package --allow-missing-repository   # produces a .vsix
 code --install-extension laia-agent-router-*.vsix
 ```
 
-Then reload VS Code. The **Laia Agent Router** view appears in the Activity Bar.
+After installing, reload VS Code. The **Laia Agent Router** view appears in the Activity Bar.
 
 ## Development
 
