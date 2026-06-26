@@ -23,5 +23,6 @@
   "command.enableLiveSignal.title": "Activar estado en vivo",
   "command.snooze.title": "Posponer…",
   "command.unsnooze.title": "Dejar de posponer",
-  "command.newSession.title": "Nueva sesión"
+  "command.newSession.title": "Nueva sesión",
+  "command.summarizeSelection.title": "Resumir → nueva sesión"
 }

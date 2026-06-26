@@ -139,6 +139,12 @@
         "icon": "$(bell)"
       },
       {
+        "command": "laiaChats.summarizeSelection",
+        "title": "%command.summarizeSelection.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(combine)"
+      },
+      {
         "command": "laiaChats.deleteForever",
         "title": "%command.deleteForever.title%",
         "category": "Laia Agent Router",
@@ -248,6 +254,11 @@
           "command": "laiaChats.unsnooze",
           "when": "view == laiaChats.sessions && viewItem == session-snoozed",
           "group": "1_edit@3"
+        },
+        {
+          "command": "laiaChats.summarizeSelection",
+          "when": "view == laiaChats.sessions && viewItem =~ /session/",
+          "group": "1_edit@4"
         },
         {
           "command": "laiaChats.hide",
