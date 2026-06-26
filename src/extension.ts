@@ -15,6 +15,7 @@ import { defaultProjectsRoot } from './core/catalog';
 import { getDetail, sessionLabel } from './core/details';
 import { collectRecaps, search } from './core/insights';
 import { resolveProjectPath, projectTemplate } from './core/newProject';
+import { buildThreadSummary, type ThreadDigest } from './core/summary';
 import { parseSignal, type HookSignal } from './core/liveSignal';
 import { mergeHookConfig } from './core/hookInstall';
 import { MetaStore } from './core/store';
@@ -458,6 +459,36 @@ export function activate(context: vscode.ExtensionContext): void {
     if (node?.kind !== 'session') return;
     store.setSnoozedUntil(node.session.id, undefined);
     tree.reload();
+  });
+
+  // Consolidate the recaps of the selected sessions into a digest and seed a new session with it.
+  cmd('laiaChats.summarizeSelection', async (node: TreeNode, nodes?: TreeNode[]) => {
+    const sel = selectedSessions(node, nodes);
+    if (!sel.length) return;
+    const threads: ThreadDigest[] = sel.map((n) => {
+      try {
+        const detail = getDetail(n.session.path);
+        return {
+          label: sessionDisplayName(n.session.id, n.session.path),
+          project: detail.cwd ?? undefined,
+          ts: detail.lastTs,
+          recaps: detail.recaps.map((r) => ({ text: r.text })),
+        };
+      } catch {
+        return { label: sessionDisplayName(n.session.id, n.session.path), recaps: [] };
+      }
+    });
+    const summary = buildThreadSummary(threads);
+    const doc = await vscode.workspace.openTextDocument({ content: summary, language: 'markdown' });
+    await vscode.window.showTextDocument(doc);
+    await vscode.env.clipboard.writeText(summary);
+    const cwd = safeCwd(sel[0]!.session.path);
+    const terminal = vscode.window.createTerminal({ name: 'Laia · new session', cwd: cwd ?? undefined });
+    terminal.show();
+    terminal.sendText('claude');
+    void vscode.window.showInformationMessage(
+      vscode.l10n.t('Summary of {0} thread(s) copied to clipboard — paste it into the new session to seed it.', sel.length),
+    );
   });
 
   cmd('laiaChats.deleteForever', async (node: TreeNode, nodes?: TreeNode[]) => {

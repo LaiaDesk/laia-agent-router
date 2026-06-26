@@ -23,5 +23,6 @@
   "command.enableLiveSignal.title": "Enable live status",
   "command.snooze.title": "Snooze…",
   "command.unsnooze.title": "Unsnooze",
-  "command.newSession.title": "New session"
+  "command.newSession.title": "New session",
+  "command.summarizeSelection.title": "Summarize → new session"
 }
