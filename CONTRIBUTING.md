@@ -20,6 +20,18 @@ We use a fork + pull request model (no direct push to `main`).
 3. Add or update tests (see below) and make sure everything is green.
 4. Open a PR against `main`. Fill in the PR template. PRs require review before merge.
 
+## Branching
+
+- **External contributors work from a fork.** You don't need (and won't get) write access to
+  this repository. Fork it, push to a branch **on your fork**, and open a PR here. You can't
+  push to this repo's branches — that's expected and keeps everyone safe.
+- **One short-lived branch per change.** Name it for the work: `feat/...`, `fix/...`, `docs/...`.
+  It gets deleted when the PR merges. Don't reuse a branch across unrelated changes.
+- **Never commit to `main` directly, and don't share a long-lived branch** that several people
+  push to at once — that's where conflicts happen. Branch → PR → merge → delete.
+- `main` is protected: every change lands through a reviewed PR with green CI. This applies to
+  maintainers too.
+
 ## Quality bar
 
 Run these locally before opening a PR — CI runs the same:
