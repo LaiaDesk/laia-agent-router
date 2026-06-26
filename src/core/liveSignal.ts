@@ -52,6 +52,23 @@ export function signalKindForEvent(event: string, notificationType?: string | nu
   }
 }
 
+const SIGNAL_KINDS: readonly SignalKind[] = ['working', 'awaiting', 'blocked', 'session-end'];
+
+/** Parse the contents of a signal file into a HookSignal, or null if invalid. */
+export function parseSignal(text: string): HookSignal | null {
+  let obj: unknown;
+  try {
+    obj = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!obj || typeof obj !== 'object') return null;
+  const { kind, ts } = obj as Record<string, unknown>;
+  if (typeof kind !== 'string' || !SIGNAL_KINDS.includes(kind as SignalKind)) return null;
+  if (typeof ts !== 'number' || !Number.isFinite(ts)) return null;
+  return { kind: kind as SignalKind, ts };
+}
+
 /**
  * Resolve the live state of a session. If a hook signal is fresh (within `freshnessMs`), it wins;
  * otherwise we defer to `fallback` (the transcript-inferred state from computeState).

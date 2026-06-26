@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveState, signalKindForEvent, type HookSignal } from '../src/core/liveSignal';
+import { resolveState, signalKindForEvent, parseSignal, type HookSignal } from '../src/core/liveSignal';
 
 const now = 1_000_000;
 const fresh = (extra: Partial<HookSignal> = {}): HookSignal => ({ kind: 'working', ts: now - 1000, ...extra });
@@ -68,5 +68,25 @@ describe('signalKindForEvent', () => {
     expect(signalKindForEvent('SessionStart')).toBeNull();
     expect(signalKindForEvent('PreCompact')).toBeNull();
     expect(signalKindForEvent('whatever')).toBeNull();
+  });
+});
+
+describe('parseSignal', () => {
+  it('parses a valid signal file', () => {
+    expect(parseSignal('{"kind":"awaiting","ts":123,"event":"Stop"}')).toEqual({ kind: 'awaiting', ts: 123 });
+  });
+
+  it('returns null for garbage or invalid JSON', () => {
+    expect(parseSignal('not json')).toBeNull();
+    expect(parseSignal('')).toBeNull();
+  });
+
+  it('returns null when kind is not a known signal kind', () => {
+    expect(parseSignal('{"kind":"nope","ts":1}')).toBeNull();
+  });
+
+  it('returns null when ts is missing or not a number', () => {
+    expect(parseSignal('{"kind":"working"}')).toBeNull();
+    expect(parseSignal('{"kind":"working","ts":"x"}')).toBeNull();
   });
 });
