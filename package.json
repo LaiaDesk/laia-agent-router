@@ -76,6 +76,12 @@
         "icon": "$(add)"
       },
       {
+        "command": "laiaChats.enableLiveSignal",
+        "title": "%command.enableLiveSignal.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(broadcast)"
+      },
+      {
         "command": "laiaChats.open",
         "title": "%command.open.title%",
         "category": "Laia Agent Router"
@@ -177,6 +183,11 @@
           "command": "laiaChats.refresh",
           "when": "view == laiaChats.sessions",
           "group": "navigation@4"
+        },
+        {
+          "command": "laiaChats.enableLiveSignal",
+          "when": "view == laiaChats.sessions",
+          "group": "navigation@5"
         }
       ],
       "view/item/context": [

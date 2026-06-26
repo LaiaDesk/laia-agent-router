@@ -11,7 +11,9 @@
  */
 
 import type { SessionState } from './state';
-import { DEFAULT_IDLE_AFTER_MS } from './state';
+
+/** Default freshness window for a hook signal (mirrors the idle window in state.ts). */
+const DEFAULT_FRESHNESS_MS = 15 * 60_000;
 
 /** What a hook told us about a session, mapped from the Claude Code event that fired. */
 export type SignalKind = 'working' | 'awaiting' | 'blocked' | 'session-end';
@@ -78,7 +80,7 @@ export function resolveState(
   signal: HookSignal | null,
   fallback: SessionState,
   now: number,
-  freshnessMs: number = DEFAULT_IDLE_AFTER_MS,
+  freshnessMs: number = DEFAULT_FRESHNESS_MS,
 ): SessionState {
   if (!signal) return fallback;
   if (now - signal.ts >= freshnessMs) return fallback; // stale: the hook is no longer authoritative

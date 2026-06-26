@@ -19,5 +19,6 @@
   "config.includeTempProjects.description": "Incluir proyectos temporales/scratch (/tmp, var-folders…).",
   "config.resumeSkipPermissions.description": "Reanudar con permisos totales por defecto (claude --resume --dangerously-skip-permissions). El botón ⚡ del visor siempre lo aplica, independientemente de este ajuste.",
   "config.blockedAfterSeconds.description": "Segundos que una herramienta puede estar pendiente antes de marcar el tema como 🔴 bloqueado (posible permiso o cuelgue).",
-  "config.idleAfterMinutes.description": "Minutos sin actividad tras los que un tema pasa a ⚪ inactivo (sale del radar: no titila ni cuenta en el badge)."
+  "config.idleAfterMinutes.description": "Minutos sin actividad tras los que un tema pasa a ⚪ inactivo (sale del radar: no titila ni cuenta en el badge).",
+  "command.enableLiveSignal.title": "Activar estado en vivo"
 }

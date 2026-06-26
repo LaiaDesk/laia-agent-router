@@ -8,13 +8,15 @@
 
 import * as vscode from 'vscode';
 import { homedir } from 'node:os';
-import { join, basename } from 'node:path';
-import { unlinkSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join, basename, dirname } from 'node:path';
+import { unlinkSync, existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync, copyFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { defaultProjectsRoot } from './core/catalog';
 import { getDetail, sessionLabel } from './core/details';
 import { collectRecaps, search } from './core/insights';
 import { resolveProjectPath, projectTemplate } from './core/newProject';
+import { parseSignal, type HookSignal } from './core/liveSignal';
+import { mergeHookConfig } from './core/hookInstall';
 import { MetaStore } from './core/store';
 import type { AttentionCount, StateThresholds } from './core/state';
 import { renderChatDocument, CHAT_STRINGS_EN, type ChatStrings } from './ui/html';
@@ -96,6 +98,42 @@ export function activate(context: vscode.ExtensionContext): void {
   watcher.onDidChange(refresh);
   watcher.onDidDelete(refresh);
   context.subscriptions.push(watcher);
+
+  // ---- F5: live signal from Claude Code hooks ----
+  // The hook helper writes ~/.laia-chats/signals/<sessionId>.json on each event; we watch that
+  // folder and feed the parsed signals to the tree, where they override transcript inference.
+  const signalsDir = join(homedir(), '.laia-chats', 'signals');
+  const signals = new Map<string, HookSignal>();
+  const sessionIdOf = (p: string) => basename(p, '.json');
+  const loadSignal = (p: string) => {
+    try {
+      const sig = parseSignal(readFileSync(p, 'utf8'));
+      if (sig) signals.set(sessionIdOf(p), sig);
+    } catch {
+      /* file vanished or unreadable: ignore */
+    }
+  };
+  try {
+    mkdirSync(signalsDir, { recursive: true });
+    for (const f of readdirSync(signalsDir)) {
+      if (f.endsWith('.json')) loadSignal(join(signalsDir, f));
+    }
+  } catch {
+    /* no signals yet */
+  }
+  tree.updateSignals(signals);
+  const sigWatcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(signalsDir, '*.json'));
+  const onSig = (uri: vscode.Uri) => {
+    loadSignal(uri.fsPath);
+    tree.updateSignals(signals);
+  };
+  sigWatcher.onDidCreate(onSig);
+  sigWatcher.onDidChange(onSig);
+  sigWatcher.onDidDelete((uri) => {
+    signals.delete(sessionIdOf(uri.fsPath));
+    tree.updateSignals(signals);
+  });
+  context.subscriptions.push(sigWatcher);
 
   // ---- Chat viewer (a single reusable panel) ----
   let panel: vscode.WebviewPanel | undefined;
@@ -297,6 +335,43 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   }
 
+  /**
+   * F5: "Enable live status". Installs the hook helper and merges our hooks into the user's
+   * Claude Code settings.json (non-destructive, idempotent), after explicit confirmation.
+   */
+  async function enableLiveSignal(): Promise<void> {
+    const laiaDir = join(homedir(), '.laia-chats');
+    const helperDest = join(laiaDir, 'hook-signal.mjs');
+    const helperSrc = vscode.Uri.joinPath(context.extensionUri, 'assets', 'hook-signal.mjs').fsPath;
+    const settingsPath = join(homedir(), '.claude', 'settings.json');
+    const command = `node "${helperDest}"`;
+
+    const enable = vscode.l10n.t('Enable');
+    const ok = await vscode.window.showInformationMessage(
+      vscode.l10n.t(
+        'Enable live status? This installs a small helper and adds Laia hooks to your Claude Code settings ({0}). Your existing settings are preserved.',
+        settingsPath,
+      ),
+      { modal: true },
+      enable,
+    );
+    if (ok !== enable) return;
+
+    try {
+      mkdirSync(laiaDir, { recursive: true });
+      copyFileSync(helperSrc, helperDest);
+      let settings: Record<string, unknown> = {};
+      if (existsSync(settingsPath)) settings = JSON.parse(readFileSync(settingsPath, 'utf8'));
+      else mkdirSync(dirname(settingsPath), { recursive: true });
+      writeFileSync(settingsPath, JSON.stringify(mergeHookConfig(settings, command), null, 2) + '\n', 'utf8');
+      void vscode.window.showInformationMessage(
+        vscode.l10n.t('Live status enabled. Claude Code applies the hooks automatically.'),
+      );
+    } catch (err) {
+      void vscode.window.showErrorMessage(vscode.l10n.t('Could not enable live status: {0}', (err as Error).message));
+    }
+  }
+
   function resumeById(sessionId: string, path: string, cwd: string | null, skipPermissions: boolean): void {
     const flag = skipPermissions ? ' --dangerously-skip-permissions' : '';
     // The terminal name matches the topic name in the tree (full, untruncated).
@@ -311,6 +386,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(vscode.commands.registerCommand(id, fn));
 
   cmd('laiaChats.addProject', () => void addProject());
+  cmd('laiaChats.enableLiveSignal', () => void enableLiveSignal());
   cmd('laiaChats.open', openSession);
   cmd('laiaChats.refresh', () => tree.reload());
 

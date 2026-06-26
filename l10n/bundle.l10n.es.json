@@ -64,5 +64,9 @@
   "Right now / next step": "Ahora mismo / próximo paso",
   "7. Current focus": "7. Foco actual",
   "Expected output format": "Formato de salida esperado",
-  "9. How to deliver results": "9. Cómo entregar resultados"
+  "9. How to deliver results": "9. Cómo entregar resultados",
+  "Enable": "Activar",
+  "Enable live status? This installs a small helper and adds Laia hooks to your Claude Code settings ({0}). Your existing settings are preserved.": "¿Activar el estado en vivo? Instala un pequeño ayudante y añade los hooks de Laia a tus ajustes de Claude Code ({0}). Tus ajustes existentes se conservan.",
+  "Live status enabled. Claude Code applies the hooks automatically.": "Estado en vivo activado. Claude Code aplica los hooks automáticamente.",
+  "Could not enable live status: {0}": "No se pudo activar el estado en vivo: {0}"
 }

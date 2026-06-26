@@ -18,6 +18,7 @@ import type { LastSignal } from '../types';
 import { getDetail } from './details';
 import type { ProjectEntry } from './catalog';
 import type { MetaStore } from './store';
+import { resolveState, type HookSignal } from './liveSignal';
 
 export type SessionState = 'working' | 'awaiting' | 'blocked' | 'idle';
 
@@ -133,17 +134,22 @@ export function liveScan(
   projects: ProjectEntry[],
   store: MetaStore,
   now: number,
-  opts: { excludeId?: string | null; thresholds?: StateThresholds } = {},
+  opts: { excludeId?: string | null; thresholds?: StateThresholds; signals?: Map<string, HookSignal> } = {},
 ): LiveScan {
   const thresholds = opts.thresholds ?? {};
   const idleAfter = thresholds.idleAfterMs ?? DEFAULT_IDLE_AFTER_MS;
+  const signals = opts.signals;
   const states = new Map<string, SessionState>();
   let awaiting = 0;
   let blocked = 0;
   for (const p of projects) {
     for (const s of p.sessions) {
-      const state: SessionState =
+      const fallback: SessionState =
         now - s.mtimeMs >= idleAfter ? 'idle' : liveStateOf(s.path, s.mtimeMs, now, thresholds);
+      // A fresh hook signal (F5) is authoritative and overrides the transcript inference.
+      const state: SessionState = signals
+        ? resolveState(signals.get(s.id) ?? null, fallback, now, idleAfter)
+        : fallback;
       states.set(s.id, state);
       if (s.id === opts.excludeId) continue;
       const meta = store.get(s.id);

@@ -21,6 +21,7 @@ import { basename } from 'node:path';
 import type { ProjectEntry, SessionEntry } from '../core/catalog';
 import { defaultProjectsRoot, listProjects } from '../core/catalog';
 import { getDetail, sessionLabel } from '../core/details';
+import type { HookSignal } from '../core/liveSignal';
 import type { MetaStore } from '../core/store';
 import {
   liveScan,
@@ -120,6 +121,8 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
   private lastAttention: AttentionCount = { awaiting: 0, blocked: 0, total: 0 };
   /** State computed per session in the last pass (key: sessionId). Avoids recomputing I/O. */
   private stateCache = new Map<string, SessionState>();
+  /** Live hook signals by sessionId (F5). Fed by the extension's signal watcher. */
+  private signals = new Map<string, HookSignal>();
   /** Materialized session nodes (those VS Code has requested), for targeted refreshes. */
   private nodeIndex = new Map<string, TreeNode>();
   private timer: ReturnType<typeof setInterval> | undefined;
@@ -155,6 +158,12 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
     this.onAttentionChange?.(this.lastAttention);
   }
 
+  /** F5: replace the live hook-signal map (from the signal watcher) and refresh states. */
+  updateSignals(signals: Map<string, HookSignal>): void {
+    this.signals = signals;
+    this.refreshStates(false);
+  }
+
   private startTimer(): void {
     this.timer = setInterval(() => this.tick(), TICK_MS);
     if (typeof this.timer.unref === 'function') this.timer.unref();
@@ -169,6 +178,7 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
     const { states, count } = liveScan(this.projects, this.store, Date.now(), {
       excludeId: this.openSessionId,
       thresholds: this.thresholds,
+      signals: this.signals,
     });
     let statesChanged = states.size !== this.stateCache.size;
     if (!statesChanged) {
