@@ -22,5 +22,6 @@
   "config.idleAfterMinutes.description": "Minutos sin actividad tras los que un tema pasa a ⚪ inactivo (sale del radar: no titila ni cuenta en el badge).",
   "command.enableLiveSignal.title": "Activar estado en vivo",
   "command.snooze.title": "Posponer…",
-  "command.unsnooze.title": "Dejar de posponer"
+  "command.unsnooze.title": "Dejar de posponer",
+  "command.newSession.title": "Nueva sesión"
 }
