@@ -36,6 +36,15 @@ describe('MetaStore', () => {
     expect(s.get('s1').archived).toBeUndefined();
     expect(s.get('s1').label).toBeUndefined();
   });
+
+  it('persists and clears snoozedUntil', () => {
+    const p = join(mkdtempSync(join(tmpdir(), 'laia-snooze-')), 'store.json');
+    const a = new MetaStore(p);
+    a.setSnoozedUntil('sX', 1_750_000_000_000);
+    expect(new MetaStore(p).get('sX').snoozedUntil).toBe(1_750_000_000_000);
+    a.setSnoozedUntil('sX', undefined);
+    expect(new MetaStore(p).get('sX').snoozedUntil).toBeUndefined();
+  });
 });
 
 describe('catalog.listProjects', () => {

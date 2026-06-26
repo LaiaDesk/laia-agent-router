@@ -76,6 +76,12 @@
         "icon": "$(add)"
       },
       {
+        "command": "laiaChats.enableLiveSignal",
+        "title": "%command.enableLiveSignal.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(broadcast)"
+      },
+      {
         "command": "laiaChats.open",
         "title": "%command.open.title%",
         "category": "Laia Agent Router"
@@ -113,6 +119,18 @@
         "command": "laiaChats.hide",
         "title": "%command.hide.title%",
         "category": "Laia Agent Router"
+      },
+      {
+        "command": "laiaChats.snooze",
+        "title": "%command.snooze.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(bell-slash)"
+      },
+      {
+        "command": "laiaChats.unsnooze",
+        "title": "%command.unsnooze.title%",
+        "category": "Laia Agent Router",
+        "icon": "$(bell)"
       },
       {
         "command": "laiaChats.deleteForever",
@@ -177,6 +195,11 @@
           "command": "laiaChats.refresh",
           "when": "view == laiaChats.sessions",
           "group": "navigation@4"
+        },
+        {
+          "command": "laiaChats.enableLiveSignal",
+          "when": "view == laiaChats.sessions",
+          "group": "navigation@5"
         }
       ],
       "view/item/context": [
@@ -204,6 +227,16 @@
           "command": "laiaChats.unarchive",
           "when": "view == laiaChats.sessions && viewItem == session-archived",
           "group": "1_edit@2"
+        },
+        {
+          "command": "laiaChats.snooze",
+          "when": "view == laiaChats.sessions && viewItem == session",
+          "group": "1_edit@3"
+        },
+        {
+          "command": "laiaChats.unsnooze",
+          "when": "view == laiaChats.sessions && viewItem == session-snoozed",
+          "group": "1_edit@3"
         },
         {
           "command": "laiaChats.hide",

@@ -21,6 +21,7 @@ import { basename } from 'node:path';
 import type { ProjectEntry, SessionEntry } from '../core/catalog';
 import { defaultProjectsRoot, listProjects } from '../core/catalog';
 import { getDetail, sessionLabel } from '../core/details';
+import type { HookSignal } from '../core/liveSignal';
 import type { MetaStore } from '../core/store';
 import {
   liveScan,
@@ -120,6 +121,8 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
   private lastAttention: AttentionCount = { awaiting: 0, blocked: 0, total: 0 };
   /** State computed per session in the last pass (key: sessionId). Avoids recomputing I/O. */
   private stateCache = new Map<string, SessionState>();
+  /** Live hook signals by sessionId (F5). Fed by the extension's signal watcher. */
+  private signals = new Map<string, HookSignal>();
   /** Materialized session nodes (those VS Code has requested), for targeted refreshes. */
   private nodeIndex = new Map<string, TreeNode>();
   private timer: ReturnType<typeof setInterval> | undefined;
@@ -155,6 +158,12 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
     this.onAttentionChange?.(this.lastAttention);
   }
 
+  /** F5: replace the live hook-signal map (from the signal watcher) and refresh states. */
+  updateSignals(signals: Map<string, HookSignal>): void {
+    this.signals = signals;
+    this.refreshStates(false);
+  }
+
   private startTimer(): void {
     this.timer = setInterval(() => this.tick(), TICK_MS);
     if (typeof this.timer.unref === 'function') this.timer.unref();
@@ -169,6 +178,7 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
     const { states, count } = liveScan(this.projects, this.store, Date.now(), {
       excludeId: this.openSessionId,
       thresholds: this.thresholds,
+      signals: this.signals,
     });
     let statesChanged = states.size !== this.stateCache.size;
     if (!statesChanged) {
@@ -290,15 +300,18 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
     const lastMs = Number.isNaN(parsed) ? s.mtimeMs : parsed;
 
     const state = meta.archived ? 'idle' : this.stateOf(s);
-    const frozen = s.id === this.openSessionId; // focus rule: the open one does not animate
+    const snoozed = !meta.archived && !!meta.snoozedUntil && Date.now() < meta.snoozedUntil;
+    const frozen = s.id === this.openSessionId || snoozed; // focus rule + snoozed: do not animate
     const item = new vscode.TreeItem(label, vscode.TreeItemCollapsibleState.None);
     item.id = s.id; // stable id: lets VS Code refresh this node in a targeted way
-    item.description = `${recaps ? `★${recaps} ` : ''}${relTime(lastMs)}`;
+    item.description = `${snoozed ? '💤 ' : ''}${recaps ? `★${recaps} ` : ''}${relTime(lastMs)}`;
     item.iconPath = iconFor(state, this.blinkOn, frozen, !!meta.archived);
-    item.contextValue = meta.archived ? 'session-archived' : 'session';
+    item.contextValue = meta.archived ? 'session-archived' : snoozed ? 'session-snoozed' : 'session';
 
     const tip = new vscode.MarkdownString();
+    tip.supportThemeIcons = true;
     if (!meta.archived) tip.appendMarkdown(`**${vscode.l10n.t('Status:')}** ${stateLabel(state)}\n\n`);
+    if (snoozed) tip.appendMarkdown(`$(bell-slash) ${vscode.l10n.t('Snoozed until {0}', fmtDateTime(meta.snoozedUntil!))}\n\n`);
     tip.appendMarkdown(`**${vscode.l10n.t('Last interaction:')}** ${fmtDateTime(lastMs)}\n\n`);
     tip.appendMarkdown(`${vscode.l10n.t('{0} messages · {1} recaps', messages || '?', recaps)}\n\n`);
     tip.appendMarkdown(`\`${s.path}\``);
