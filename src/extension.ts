@@ -84,7 +84,10 @@ export function activate(context: vscode.ExtensionContext): void {
   const tree = new SessionsTree(store, root, includeTemp, thresholds, applyAttention);
   context.subscriptions.push({ dispose: () => tree.dispose() });
 
-  const view = vscode.window.createTreeView('laiaChats.sessions', { treeDataProvider: tree });
+  const view = vscode.window.createTreeView('laiaChats.sessions', {
+    treeDataProvider: tree,
+    canSelectMany: true, // Shift/Cmd-click to act on several sessions at once
+  });
   viewRef = view;
   context.subscriptions.push(view);
   // The initial count was computed in the tree constructor, when `viewRef` did not exist yet:
@@ -412,20 +415,29 @@ export function activate(context: vscode.ExtensionContext): void {
     resumeById(node.session.id, node.session.path, safeCwd(node.session.path), true);
   });
 
-  cmd('laiaChats.archive', (node: TreeNode) => {
-    if (node?.kind !== 'session') return;
-    store.setArchived(node.session.id, true);
+  // With canSelectMany, context-menu commands receive (clickedNode, allSelectedNodes).
+  // Fall back to the single clicked node; keep only session nodes.
+  type SessionNode = Extract<TreeNode, { kind: 'session' }>;
+  const selectedSessions = (node?: TreeNode, nodes?: TreeNode[]): SessionNode[] =>
+    (nodes?.length ? nodes : node ? [node] : []).filter((n): n is SessionNode => !!n && n.kind === 'session');
+
+  cmd('laiaChats.archive', (node: TreeNode, nodes?: TreeNode[]) => {
+    const sel = selectedSessions(node, nodes);
+    if (!sel.length) return;
+    for (const n of sel) store.setArchived(n.session.id, true);
     tree.reload();
   });
-  cmd('laiaChats.unarchive', (node: TreeNode) => {
-    if (node?.kind !== 'session') return;
-    store.setArchived(node.session.id, false);
+  cmd('laiaChats.unarchive', (node: TreeNode, nodes?: TreeNode[]) => {
+    const sel = selectedSessions(node, nodes);
+    if (!sel.length) return;
+    for (const n of sel) store.setArchived(n.session.id, false);
     tree.reload();
   });
 
-  cmd('laiaChats.hide', (node: TreeNode) => {
-    if (node?.kind !== 'session') return;
-    store.setHidden(node.session.id, true);
+  cmd('laiaChats.hide', (node: TreeNode, nodes?: TreeNode[]) => {
+    const sel = selectedSessions(node, nodes);
+    if (!sel.length) return;
+    for (const n of sel) store.setHidden(n.session.id, true);
     tree.reload();
   });
 
@@ -448,24 +460,37 @@ export function activate(context: vscode.ExtensionContext): void {
     tree.reload();
   });
 
-  cmd('laiaChats.deleteForever', async (node: TreeNode) => {
-    if (node?.kind !== 'session') return;
+  cmd('laiaChats.deleteForever', async (node: TreeNode, nodes?: TreeNode[]) => {
+    const sel = selectedSessions(node, nodes);
+    if (!sel.length) return;
     const del = vscode.l10n.t('Delete permanently');
     const ok = await vscode.window.showWarningMessage(
       vscode.l10n.t(
-        'Deleting this topic PERMANENTLY will erase its .jsonl transcript from disk. The history will be lost and it cannot be resumed. Continue?',
+        'Permanently delete {0} topic(s)? Their .jsonl transcripts will be erased from disk; the history is lost and cannot be resumed.',
+        sel.length,
       ),
       { modal: true },
       del,
     );
     if (ok !== del) return;
-    try {
-      unlinkSync(node.session.path);
-      store.setHidden(node.session.id, false); // clears metadata
-      tree.reload();
-      void vscode.window.showInformationMessage(vscode.l10n.t('Transcript deleted.'));
-    } catch (err) {
-      void vscode.window.showErrorMessage(vscode.l10n.t('Could not delete: {0}', (err as Error).message));
+    let deleted = 0;
+    const errors: string[] = [];
+    for (const n of sel) {
+      try {
+        unlinkSync(n.session.path);
+        store.setHidden(n.session.id, false); // clears metadata
+        deleted++;
+      } catch (err) {
+        errors.push((err as Error).message);
+      }
+    }
+    tree.reload();
+    if (errors.length) {
+      void vscode.window.showErrorMessage(
+        vscode.l10n.t('Could not delete {0} of {1}: {2}', errors.length, sel.length, errors[0]!),
+      );
+    } else {
+      void vscode.window.showInformationMessage(vscode.l10n.t('Deleted {0} transcript(s).', deleted));
     }
   });
 

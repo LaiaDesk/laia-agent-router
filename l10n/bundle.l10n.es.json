@@ -74,5 +74,8 @@
   "1 hour": "1 hora",
   "4 hours": "4 horas",
   "1 day": "1 día",
-  "Snoozed until {0}": "Pospuesto hasta {0}"
+  "Snoozed until {0}": "Pospuesto hasta {0}",
+  "Permanently delete {0} topic(s)? Their .jsonl transcripts will be erased from disk; the history is lost and cannot be resumed.": "¿Eliminar definitivamente {0} tema(s)? Se borrarán sus transcripts .jsonl del disco; el historial se pierde y no se podrá reanudar.",
+  "Deleted {0} transcript(s).": "{0} transcript(s) eliminados.",
+  "Could not delete {0} of {1}: {2}": "No se pudieron eliminar {0} de {1}: {2}"
 }
