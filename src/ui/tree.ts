@@ -20,6 +20,7 @@ import * as vscode from 'vscode';
 import { basename } from 'node:path';
 import type { ProjectEntry, SessionEntry } from '../core/catalog';
 import { defaultProjectsRoot, listProjects } from '../core/catalog';
+import { SESSION_URI_SCHEME, sessionUriPath } from '../core/openMarker';
 import { getDetail, sessionLabel } from '../core/details';
 import type { HookSignal } from '../core/liveSignal';
 import type { MetaStore } from '../core/store';
@@ -304,6 +305,8 @@ export class SessionsTree implements vscode.TreeDataProvider<TreeNode> {
     const frozen = s.id === this.openSessionId || snoozed; // focus rule + snoozed: do not animate
     const item = new vscode.TreeItem(label, vscode.TreeItemCollapsibleState.None);
     item.id = s.id; // stable id: lets VS Code refresh this node in a targeted way
+    // resourceUri (own scheme) lets the FileDecorationProvider paint the "open terminal" badge.
+    item.resourceUri = vscode.Uri.from({ scheme: SESSION_URI_SCHEME, path: sessionUriPath(s.id) });
     item.description = `${snoozed ? '💤 ' : ''}${recaps ? `★${recaps} ` : ''}${relTime(lastMs)}`;
     item.iconPath = iconFor(state, this.blinkOn, frozen, !!meta.archived);
     item.contextValue = meta.archived ? 'session-archived' : snoozed ? 'session-snoozed' : 'session';
