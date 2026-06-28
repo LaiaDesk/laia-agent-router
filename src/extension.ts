@@ -18,6 +18,7 @@ import { resolveProjectPath, projectTemplate } from './core/newProject';
 import { buildThreadSummary, type ThreadDigest } from './core/summary';
 import { parseSignal, type HookSignal } from './core/liveSignal';
 import { mergeHookConfig } from './core/hookInstall';
+import { sessionIdFromUri, openDecoration } from './core/openMarker';
 import { MetaStore } from './core/store';
 import type { AttentionCount, StateThresholds } from './core/state';
 import { renderChatDocument, CHAT_STRINGS_EN, type ChatStrings } from './ui/html';
@@ -148,11 +149,38 @@ export function activate(context: vscode.ExtensionContext): void {
   // Terminals open per session (those created by "Resume"/full permissions/play).
   // Used so that, when clicking a session, its terminal is focused if it is still alive.
   const terminalsBySession = new Map<string, vscode.Terminal>();
+
+  // ---- "Open terminal" marker: a badge on sessions that currently have a terminal open ----
+  // A FileDecorationProvider paints the badge on each session node (matched by its resourceUri).
+  // We re-fire the event whenever a terminal opens/closes so the dot appears/disappears live.
+  const openMarkers = new vscode.EventEmitter<vscode.Uri | vscode.Uri[] | undefined>();
+  const refreshOpenMarkers = () => openMarkers.fire(undefined);
+  const sessionPathOf = (id: string): string | undefined => {
+    for (const p of tree.getProjects()) {
+      for (const s of p.sessions) if (s.id === id) return s.path;
+    }
+    return undefined;
+  };
+  const isSessionOpen = (id: string): boolean => {
+    const path = sessionPathOf(id);
+    return !!path && !!findTerminal(id, path);
+  };
   context.subscriptions.push(
+    vscode.window.registerFileDecorationProvider({
+      onDidChangeFileDecorations: openMarkers.event,
+      provideFileDecoration(uri) {
+        const id = sessionIdFromUri(uri.scheme, uri.path);
+        if (!id) return undefined;
+        const d = openDecoration(isSessionOpen(id));
+        return d ? new vscode.FileDecoration(d.badge, d.tooltip) : undefined;
+      },
+    }),
+    vscode.window.onDidOpenTerminal(refreshOpenMarkers),
     vscode.window.onDidCloseTerminal((t) => {
       for (const [id, term] of terminalsBySession) {
         if (term === t) terminalsBySession.delete(id);
       }
+      refreshOpenMarkers();
     }),
   );
 
